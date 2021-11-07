@@ -135,4 +135,13 @@ class IndexController extends Controller {
 
         echo 'Sold ' . $item['symbol'];
     }
+
+    function clean() {
+        DB::table('stats')->truncate();
+        DB::table('trades')->truncate();
+        DB::table('wallet')->update([
+            'funds' => 100,
+            'profit' => 0
+        ]);
+    }
 }
