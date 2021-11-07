@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller {
+    private $bid = 20;
+
     function __invoke() {
         $old_prices = DB::table('stats')->get();
         $new_prices = $this->getNewPrices();
@@ -31,10 +33,10 @@ class IndexController extends Controller {
         if ($comparison->count()) {
             $item = $comparison->where('delta_price', '>', 0)->sortByDesc('confidence')->first();
 
-            var_dump($item);
-            var_dump($this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count());
+            // var_dump($item);
+            // var_dump($this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count());
 
-            if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() && $item['confidence'] > 3 && $this->getFunds() > 20) {
+            if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() && $item['confidence'] > 3 && $this->getFunds() > $this->bid) {
                 $this->buy($item);
             }
         }
@@ -94,16 +96,22 @@ class IndexController extends Controller {
     }
 
     function buy($item) {
-        DB::table('trades')->insert([
-            'symbol' => $item['symbol'],
-            'delta_price' => $item['delta_price'],
-            'delta_volume' => $item['delta_volume'],
-            'confidence' => $item['confidence'],
-            'buy_price' => $item['price'],
-            'top_price' => $item['price'],
-            'buy_time' => date('Y-m-d H:i:s'),
-            'status' => 'active'
-        ]);
+        DB::transaction(function() {
+            DB::table('trades')->insert([
+                'symbol' => $item['symbol'],
+                'delta_price' => $item['delta_price'],
+                'delta_volume' => $item['delta_volume'],
+                'confidence' => $item['confidence'],
+                'buy_price' => $item['price'],
+                'top_price' => $item['price'],
+                'buy_time' => date('Y-m-d H:i:s'),
+                'status' => 'active'
+            ]);
+
+            DB::table('wallet')->update([
+                'funds' => DB::raw("`funds` - $this->bid")
+            ]);
+        });
 
         echo 'Bought ' . $item['symbol'];
     }
