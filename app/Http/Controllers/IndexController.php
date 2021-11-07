@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class IndexController extends Controller {
     private $bid = 20;
 
-    function index() {
+    function __invoke() {
         $old_prices = DB::table('stats')->get();
         $new_prices = $this->getNewPrices();
         $comparison = collect();
