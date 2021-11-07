@@ -130,8 +130,7 @@ class IndexController extends Controller {
         ]);
 
         DB::table('wallet')->update([
-            'funds' => DB::raw("`funds` + $profit"),
-            'profit' => DB::raw("`profit` + $profit")
+            'funds' => DB::raw("`funds` + $this->bid + $profit"),
         ]);
 
         echo 'Sold ' . $item['symbol'];
