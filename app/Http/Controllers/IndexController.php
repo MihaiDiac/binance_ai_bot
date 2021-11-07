@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class IndexController extends Controller {
     private $bid = 20;
 
-    function __invoke() {
+    function index() {
         $old_prices = DB::table('stats')->get();
         $new_prices = $this->getNewPrices();
         $comparison = collect();
@@ -29,6 +29,8 @@ class IndexController extends Controller {
                 ]);
             }
         }
+
+        // var_dump($comparison);
 
         if ($comparison->count()) {
             $item = $comparison->where('delta_price', '>', 0)->sortByDesc('confidence')->first();
@@ -96,7 +98,7 @@ class IndexController extends Controller {
     }
 
     function buy($item) {
-        DB::transaction(function() {
+        DB::transaction(function() use ($item) {
             DB::table('trades')->insert([
                 'symbol' => $item['symbol'],
                 'delta_price' => $item['delta_price'],
@@ -117,7 +119,7 @@ class IndexController extends Controller {
     }
 
     function sell($item, $old_price) {
-        $profit = 100 * ($item['price'] / $old_price - 1);
+        $profit = $this->bid * ($item['price'] / $old_price - 1);
 
         DB::table('trades')->where('symbol', $item['symbol'])->where('status', 'active')->update([
             'status' => 'finished',
