@@ -87,7 +87,8 @@ class IndexController extends Controller {
                     // var_dump(number_format(100 * ($item->buy_price - $new_price['price']) / $new_price['price'], 2));
                     // var_dump(number_format(100 * ($item->top_price - $new_price['price']) / $new_price['price'], 2));
 
-                    if (number_format(100 * ($new_price['price'] - $item->buy_price) / $item->buy_price, 2) > 3) {
+                    if (number_format(100 * ($new_price['price'] - $item->buy_price) / $item->buy_price, 2) > 3 ||
+                        number_format(100 * ($item->buy_price - $new_price['price']) / $new_price['price'], 2) > 3) {
                         $this->sell($new_price, $item->buy_price);
                     }
 
