@@ -37,8 +37,11 @@ class IndexController extends Controller {
 
             // var_dump($item);
             // var_dump($this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count());
+            // var_dump(!DB::table('trades')->where('buy_time', '<' , date('Y-m-d H:i:s', strtotime('-6 hour')))->count());
 
-            if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() && $item['confidence'] > 3 && $this->getFunds() > $this->bid) {
+            if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() &&
+                !DB::table('trades')->where('buy_time', '<' , date('Y-m-d H:i:s', strtotime('-6 hour')))->count() &&
+                $item['confidence'] > 3 && $this->getFunds() > $this->bid) {
                 $this->buy($item);
             }
         }
