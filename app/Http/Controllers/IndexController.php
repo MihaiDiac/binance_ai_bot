@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller {
-    private $bid = 20;
+    private $bid = 50;
 
     function __invoke() {
         $old_prices = DB::table('stats')->get();
@@ -24,7 +24,6 @@ class IndexController extends Controller {
                     'symbol' => $item['symbol'],
                     'delta_price' => $delta_price,
                     'delta_volume' => $delta_volume,
-                    'confidence' => $delta_price * $delta_volume,
                     'price' => $item['price']
                 ]);
             }
@@ -33,17 +32,16 @@ class IndexController extends Controller {
         // var_dump($comparison);
 
         if ($comparison->count()) {
-            $item = $comparison->where('delta_price', '>', 0)->sortByDesc('confidence')->first();
+            // $item = $comparison->where('delta_price', '>', 0)->sortByDesc('confidence')->first();
+            $item = $comparison->shuffle()->first();
 
             // var_dump($item);
             // var_dump($this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count());
             // var_dump(!DB::table('trades')->where('symbol', $item['symbol'])->where('buy_time', '>=' , date('Y-m-d H:i:s', strtotime('-6 hour')))->count());
 
-            if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() && $item['confidence'] > 3 && $this->getFunds() > $this->bid &&
-                !DB::table('trades')->where('symbol', $item['symbol'])->where('buy_time', '>=' , date('Y-m-d H:i:s', strtotime('-6 hour')))->count()) 
-            {
-                $this->buy($item);
-            }
+            // if (!$this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count() && $this->getFunds() > $this->bid &&
+                // !DB::table('trades')->where('symbol', $item['symbol'])->where('buy_time', '>=' , date('Y-m-d H:i:s', strtotime('-6 hour')))->count()) 
+            $this->buy($item);
         }
     }
 
@@ -90,8 +88,8 @@ class IndexController extends Controller {
                     // var_dump(number_format(100 * ($item->buy_price - $new_price['price']) / $new_price['price'], 2));
                     // var_dump(number_format(100 * ($item->top_price - $new_price['price']) / $new_price['price'], 2));
 
-                    if (number_format(100 * ($new_price['price'] - $item->buy_price) / $item->buy_price, 2) > 3 ||
-                        number_format(100 * ($item->buy_price - $new_price['price']) / $new_price['price'], 2) > 3) {
+                    if (number_format(100 * ($new_price['price'] - $item->buy_price) / $item->buy_price, 2) > 2 ||
+                        number_format(100 * ($item->buy_price - $new_price['price']) / $new_price['price'], 2) > 2) {
                         $this->sell($new_price, $item->buy_price);
                     }
 
@@ -107,7 +105,6 @@ class IndexController extends Controller {
                 'symbol' => $item['symbol'],
                 'delta_price' => $item['delta_price'],
                 'delta_volume' => $item['delta_volume'],
-                'confidence' => $item['confidence'],
                 'buy_price' => $item['price'],
                 'top_price' => $item['price'],
                 'buy_time' => date('Y-m-d H:i:s'),
