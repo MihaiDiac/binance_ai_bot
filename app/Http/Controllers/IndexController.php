@@ -32,8 +32,13 @@ class IndexController extends Controller {
         // var_dump($comparison);
 
         if ($comparison->count()) {
-            // $item = $comparison->where('delta_price', '>', 0)->sortByDesc('confidence')->first();
-            $item = $comparison->shuffle()->first();
+            // var_dump($comparison);
+            $item = $comparison->sort(function($a, $b) {
+                if (abs($a['delta_price']) == abs($b['delta_price'])) {
+                    return 0;
+                }
+                return (abs($a['delta_price']) < abs($b['delta_price'])) ? 1 : -1;
+            })->first();
 
             // var_dump($item);
             // var_dump($this->getActiveTrades()->whereIn('symbol', $item['symbol'])->count());
@@ -143,5 +148,9 @@ class IndexController extends Controller {
             'funds' => 100,
             'profit' => 0
         ]);
+    }
+
+    function compare($a, $b) {
+        
     }
 }
