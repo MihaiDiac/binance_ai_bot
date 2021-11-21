@@ -8,11 +8,15 @@ import random
 from datetime import datetime
 import os
 
+tf.config.set_visible_devices([], 'GPU')
+
 def load():
     return tf.keras.models.load_model('crypto_model')
 
 def predict(model):
-    previous_stats = get_stats()
+    if (path.exists('stats.csv')):
+        previous_stats = get_stats()
+    
     set_stats()
     current_stats = get_stats()
     
