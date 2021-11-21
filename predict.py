@@ -14,7 +14,7 @@ def load():
     return tf.keras.models.load_model('crypto_model')
 
 def predict(model):
-    if (path.exists('stats.csv')):
+    if (os.path.exists('stats.csv')):
         previous_stats = get_stats()
     
     set_stats()
