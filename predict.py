@@ -85,7 +85,7 @@ def sell():
         for row in csv.reader(active_in):
             if ((datetime.now() - datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S')).total_seconds() / 60.0 > 15):
                 sell_price = [d for d in get_stats() if d['symbol'] == row[0]][0]['price']
-                profit = 100 * (sell_price / row[4] - 1)
+                profit = 100 * (sell_price / float(row[4]) - 1)
                 writer_finished.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
             else:
                 writer_active.writerow(row)
