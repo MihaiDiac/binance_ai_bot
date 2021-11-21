@@ -70,13 +70,14 @@ def set_stats():
     with open('stats.csv', mode='w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for item in stats:
-            if (item['symbol'].find('USDT') != -1 and item['symbol'].find('DOWN') == -1 and item['symbol'].find('UP') == -1 and not float(item['lastPrice']) == 0):
+            if (item['symbol'].endswith('USDT') == True and not float(item['lastPrice']) == 0):
                 writer.writerow([item['symbol'], item['lastPrice'], item['quoteVolume']])
 
 def buy(item):
-    with open('trades_active.csv', mode='a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow([item['symbol'], item['delta_price'], item['delta_volume'], item['prediction'], item['buy_price'], item['buy_time']])
+    if (item['delta_price'] != 0 and item['delta_volume'] != 0):
+        with open('trades_active.csv', mode='a', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([item['symbol'], item['delta_price'], item['delta_volume'], item['prediction'], item['buy_price'], item['buy_time']])
 
 def sell():
     with open('trades_active.csv', 'r') as active_in, open('trades_active_temp.csv', 'w', newline='') as active_out, open('trades_finished.csv', 'a', newline='') as finished:
