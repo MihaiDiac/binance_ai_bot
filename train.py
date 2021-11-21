@@ -17,7 +17,7 @@ def train():
 
     with open('trades_finished.csv') as csvfile:    
         for row in csv.reader(csvfile):
-            train_data = numpy.append(train_data, [[float(row[1]), float(row[2]), float(row[3])]], axis = 0)
+            train_data = numpy.append(train_data, [[float(row[1]), float(row[2]), float(row[4])]], axis = 0)
             train_targets = numpy.append(train_targets, [float(row[5])])
 
     model.fit(train_data, train_targets, epochs=100, batch_size=1)
