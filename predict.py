@@ -54,7 +54,9 @@ def predict(model):
         })
 
     # sorted(result, key = itemgetter('prediction'), reverse = True)
-    return random.choice(predicted_data)
+    # return predicted_data[0]
+    random.shuffle(predicted_data)
+    return predicted_data[:15]
 
 def get_stats():
     stats = []
@@ -94,6 +96,7 @@ def sell():
     os.rename('trades_active_temp.csv', 'trades_active.csv')
 
 model = load()
-item = predict(model)
-buy(item)
+items = predict(model)
+for item in items:
+    buy(item)
 sell()
