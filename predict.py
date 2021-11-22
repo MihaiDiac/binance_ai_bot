@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy
-import csv 
+import csv
 from operator import itemgetter
 from pprint import pprint
 import requests
