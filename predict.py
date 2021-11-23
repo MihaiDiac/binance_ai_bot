@@ -53,7 +53,7 @@ def predict(model):
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
 
-    sorted(result, key = itemgetter('prediction'), reverse = True)
+    sorted(predicted_data, key = itemgetter('prediction'), reverse = True)
     return predicted_data[:15]
     # random.shuffle(predicted_data)
     # return predicted_data[:15]
