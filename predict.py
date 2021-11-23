@@ -53,10 +53,10 @@ def predict(model):
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
 
-    # sorted(result, key = itemgetter('prediction'), reverse = True)
-    # return predicted_data[0]
-    random.shuffle(predicted_data)
+    sorted(result, key = itemgetter('prediction'), reverse = True)
     return predicted_data[:15]
+    # random.shuffle(predicted_data)
+    # return predicted_data[:15]
 
 def get_stats():
     stats = []
