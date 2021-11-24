@@ -82,21 +82,16 @@ def buy(item):
             writer.writerow([item['symbol'], item['delta_price'], item['delta_volume'], item['prediction'], item['buy_price'], item['buy_time']])
 
 def sell():
-    with open('trades_active.csv', 'r') as active_in, open('trades_active_temp.csv', 'w', newline='') as active_out, open('trades_finished.csv', 'a', newline='') as finished:
-        writer_active = csv.writer(active_out)
-        writer_finished = csv.writer(finished)
-        for row in csv.reader(active_in):
-            if ((datetime.now() - datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S')).total_seconds() / 60.0 > 15):
-                sell_price = [d for d in get_stats() if d['symbol'] == row[0]][0]['price']
-                profit = 100 * (sell_price / float(row[4]) - 1)
-                writer_finished.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
-            else:
-                writer_active.writerow(row)
-    os.remove('trades_active.csv')
-    os.rename('trades_active_temp.csv', 'trades_active.csv')
+    with open('trades_active.csv', 'r+') as active, open('trades_finished.csv', 'a', newline='') as finished:
+        writer = csv.writer(finished)
+        for row in csv.reader(active):
+            sell_price = [d for d in get_stats() if d['symbol'] == row[0]][0]['price']
+            profit = 100 * (sell_price / float(row[4]) - 1)
+            writer.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+        active.truncate(0)
 
+sell()
 model = load()
 items = predict(model)
 for item in items:
     buy(item)
-sell()
