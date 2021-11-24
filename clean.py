@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 import os
 
-with open('trades_finished.csv', mode='r+', newline='') as csv_in, open('trades_finished_temp.csv', mode='w', newline='') as csv_out:
+with open('trades_finished.csv', mode='r') as csv_in, open('trades_finished_temp.csv', mode='w', newline='') as csv_out:
     writer = csv.writer(csv_out)
 
     for row in csv.reader(csv_in):

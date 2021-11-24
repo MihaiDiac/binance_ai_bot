@@ -4,7 +4,7 @@ from pprint import pprint
 
 summary = {};
 
-with open('trades_finished.csv', mode='r', newline = '') as csvfile:
+with open('trades_finished.csv', mode='r') as csvfile:
     for row in csv.reader(csvfile):
         date = datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
         if date in summary:
@@ -19,7 +19,6 @@ with open('trades_finished.csv', mode='r', newline = '') as csvfile:
                 'neg_count' : 1 if float(row[6]) < 0 else 0,
                 'sum' : float(row[6]),
             }
-        row_count = row_count + 1
 
 for item in summary:
     summary[item]['avg'] = summary[item]['sum'] / (summary[item]['pos_count'] + summary[item]['neg_count'])
