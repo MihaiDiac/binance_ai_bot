@@ -4,7 +4,7 @@ from pprint import pprint
 
 summary = {};
 
-with open('trades_finished.csv', mode='w', newline = '') as csvfile:
+with open('trades_finished.csv', mode='r', newline = '') as csvfile:
     for row in csv.reader(csvfile):
         date = datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
         if date in summary:
