@@ -10,14 +10,10 @@ import os
 
 tf.config.set_visible_devices([], 'GPU')
 
-def load():
+def get_model():
     return tf.keras.models.load_model('crypto_model')
 
-def predict(model):
-    previous_stats = get_stats() if os.path.exists('stats.csv') else None
-    set_stats()
-    current_stats = get_stats()
-    
+def predict(model, previous_stats, current_stats):
     if (not previous_stats):
         exit()
     
@@ -68,12 +64,18 @@ def get_stats():
     return stats
 
 def set_stats():
-    stats = requests.get('https://api.binance.com/api/v3/ticker/24hr').json()
+    stats = []
+    new_stats = requests.get('https://api.binance.com/api/v3/ticker/24hr').json()
+    
     with open('stats.csv', mode='w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        for item in stats:
+        for item in new_stats:
             if (item['symbol'].endswith('USDT') == True and not float(item['lastPrice']) == 0):
                 writer.writerow([item['symbol'], item['lastPrice'], item['quoteVolume']])
+                stats.append({'symbol' : item['symbol'], 'price' : float(item['lastPrice']), 'volume' : float(item['quoteVolume'])})
+
+    return stats
+
 
 def buy(item):
     if (item['delta_price'] != 0 and item['delta_volume'] != 0):
@@ -81,17 +83,23 @@ def buy(item):
             writer = csv.writer(csvfile)
             writer.writerow([item['symbol'], item['delta_price'], item['delta_volume'], item['prediction'], item['buy_price'], item['buy_time']])
 
-def sell():
+def sell(current_stats):
     with open('trades_active.csv', 'r+') as active, open('trades_finished.csv', 'a', newline='') as finished:
         writer = csv.writer(finished)
         for row in csv.reader(active):
-            sell_price = [d for d in get_stats() if d['symbol'] == row[0]][0]['price']
+            sell_price = [d for d in current_stats if d['symbol'] == row[0]][0]['price']
             profit = 100 * (sell_price / float(row[4]) - 1)
             writer.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
         active.truncate(0)
 
-sell()
-model = load()
-items = predict(model)
-for item in items:
-    buy(item)
+def main():
+    previous_stats = get_stats() if os.path.exists('stats.csv') else None
+    current_stats = set_stats()
+    
+    sell(current_stats)
+    
+    items = predict(get_model(), previous_stats, current_stats)
+    for item in items:
+        buy(item)
+
+main()
