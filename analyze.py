@@ -1,13 +1,10 @@
 import csv
 from datetime import datetime
 from pprint import pprint
-from decimal import Decimal
 
 summary = {};
 
-row_count = 0
-
-with open('trades_finished.csv') as csvfile:    
+with open('trades_finished.csv', mode='w', newline = '') as csvfile:
     for row in csv.reader(csvfile):
         date = datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
         if date in summary:
