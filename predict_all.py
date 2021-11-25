@@ -50,7 +50,7 @@ def predict(model, previous_stats, current_stats):
         })
 
     sorted(predicted_data, key = itemgetter('prediction'), reverse = True)
-    return predicted_data[:15]
+    return predicted_data
 
 def get_stats():
     stats = []
@@ -74,17 +74,16 @@ def set_stats():
 
     return stats
 
-
 def buy(items):
     for item in items:
         if (item['delta_price'] != 0 and item['delta_volume'] != 0):
-            with open('trades_active.csv', mode='a', newline='') as csvfile:
+            with open('trades_active_all.csv', mode='a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow([item['symbol'], item['delta_price'], item['delta_volume'], item['prediction'], item['buy_price'], item['buy_time']])
 
 def sell(current_stats):
-    if os.path.exists('trades_active.csv'):
-        with open('trades_active.csv', 'r+') as active, open('trades_finished.csv', 'a', newline='') as finished:
+    if os.path.exists('trades_active_all.csv'):
+        with open('trades_active_all.csv', 'r+') as active, open('trades_finished_all.csv', 'a', newline='') as finished:
             writer = csv.writer(finished)
             for row in csv.reader(active):
                 sell_price = [d for d in current_stats if d['symbol'] == row[0]][0]['price']
