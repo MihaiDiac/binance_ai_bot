@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 from pprint import pprint
+import os
 
 def get_summary(trades_file):
     summary = {};
