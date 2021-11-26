@@ -16,7 +16,7 @@ def train():
     train_data = numpy.empty(shape=[0, 3]);
     train_targets = numpy.empty(shape=[0, 1]);
 
-    with open('trades_finished.csv') as csvfile:    
+    with open('trades_finished_all.csv') as csvfile:    
         for row in csv.reader(csvfile):
             train_data = numpy.append(train_data, [[float(row[1]), float(row[2]), float(row[4])]], axis = 0)
             train_targets = numpy.append(train_targets, [float(row[5])])
