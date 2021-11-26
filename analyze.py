@@ -27,8 +27,10 @@ def get_summary(trades_file):
 
     return summary
 
-summary = get_summary('trades_finished.csv')
-pprint(summary)
+if os.path.exists('trades_finished.csv'):
+    summary = get_summary('trades_finished.csv')
+    pprint(summary)
 
-summary = get_summary('trades_finished_all.csv')
-pprint(summary)
+if os.path.exists('trades_finished_all.csv'):
+    summary = get_summary('trades_finished_all.csv')
+    pprint(summary)
