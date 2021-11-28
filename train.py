@@ -32,5 +32,4 @@ def train():
 def save(model):
     model.save('model')
 
-model = train()
-save(model)
+save(train())

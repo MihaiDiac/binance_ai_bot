@@ -15,7 +15,7 @@ def get_model():
 
 def predict(model, previous_stats, current_stats):
     if (not previous_stats):
-        exit()
+        exit('No data for previous stats. This is normal on the first execution of the script.')
     
     predict_data = numpy.empty(shape=[0, 2])
 
@@ -29,7 +29,7 @@ def predict(model, previous_stats, current_stats):
         delta_volume = 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
         predict_data = numpy.append(predict_data, [[delta_price, delta_volume]], axis = 0)
 
-    predictions = model.predict(predict_data) if model != None else None
+    predictions = model.predict(predict_data) if model else None
 
     predicted_data = []
     for i, current_stat in enumerate(current_stats):
@@ -44,7 +44,7 @@ def predict(model, previous_stats, current_stats):
             'symbol' : current_stat['symbol'], 
             'delta_price' : delta_price,
             'delta_volume' : delta_volume,
-            'prediction' : predictions[i][0] if predictions != None else 0,
+            'prediction' : predictions[i][0] if predictions.all() else 0,
             'buy_price' : current_stat['price'],
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
@@ -53,7 +53,7 @@ def predict(model, previous_stats, current_stats):
 
     return {
         'all': predicted_data, 
-        'predicted': predicted_data[:15] if predictions != None else [random.choice(predicted_data) for i in range(15)],
+        'predicted': predicted_data[:15] if predictions.all() else [random.choice(predicted_data) for i in range(15)],
         'random': [random.choice(predicted_data) for i in range(15)]
     }
 
