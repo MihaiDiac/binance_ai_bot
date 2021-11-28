@@ -102,7 +102,7 @@ def sell(current_stats):
                 writer = csv.writer(finished)
                 for row in csv.reader(active):
                     sell_price = [d for d in current_stats if d['symbol'] == row[0]][0]['price']
-                    profit = 100 * (sell_price / float(row[4]) - 1)
+                    profit = 100 * 100 * (sell_price / float(row[4]) - 1)
                     writer.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
                 active.truncate(0)
     
