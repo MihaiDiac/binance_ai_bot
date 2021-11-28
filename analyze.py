@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from pprint import pprint
 import os
+from tabulate import tabulate
 
 def get_summary(summary, branch, trades_file):
     with open(trades_file, mode='r') as csvfile:
@@ -11,14 +12,14 @@ def get_summary(summary, branch, trades_file):
                 summary[date] = {}
                 summary[date][branch] = {
                     'pos_count' : 1 if float(row[6]) > 0 else 0,
-                    'neg_count' : 1 if float(row[6]) < 0 else 0,
+                    'neg_count' : 1 if float(row[6]) <= 0 else 0,
                     'sum' : float(row[6]),
                 }
             else:
                 if not branch in summary[date]:
                     summary[date][branch] = {
                         'pos_count' : 1 if float(row[6]) > 0 else 0,
-                        'neg_count' : 1 if float(row[6]) < 0 else 0,
+                        'neg_count' : 1 if float(row[6]) <= 0 else 0,
                         'sum' : float(row[6]),
                     }
                 else:
@@ -44,3 +45,5 @@ if os.path.exists('trades_finished_all.csv'):
     summary = get_summary(summary, 'all', 'trades_finished_all.csv')
 
 pprint(summary)
+
+# print(tabulate([['2021-11-25', '0.5', '0.23']], headers = ['date', 'predicted', 'all']))
