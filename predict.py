@@ -19,19 +19,18 @@ def predict(model, previous_stats, current_stats):
         exit('Info: no data for previous stats')
     
     predict_data = numpy.empty(shape=[0, 2])
-
-    for current_stat in current_stats:
-        previous_stat = [d for d in previous_stats if d['symbol'] == current_stat['symbol']]
-        
-        if not previous_stat:
-            break
-
-        delta_price = 100 * (current_stat['price'] - previous_stat[0]['price']) / previous_stat[0]['price']
-        delta_volume = 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
-        predict_data = numpy.append(predict_data, [[delta_price, delta_volume]], axis = 0)
-
     if (model):
+        for current_stat in current_stats:
+            previous_stat = [d for d in previous_stats if d['symbol'] == current_stat['symbol']]
+            if not previous_stat:
+                break
+
+            predict_data = numpy.append(predict_data, [[
+                    get_delta_value(previous_stat[0]['price'], current_stat['price']),
+                    get_delta_value(previous_stat[0]['volume'], current_stat['volume']),
+                ]], axis = 0)
         predictions = model.predict(predict_data)
+            
     else:
         predictions = numpy.empty(shape=[0, 1])
         print('Info: no model to load')
@@ -42,19 +41,16 @@ def predict(model, previous_stats, current_stats):
         if not previous_stat:
             break
 
-        delta_price = 100 * 100 * (current_stat['price'] - previous_stat[0]['price']) / previous_stat[0]['price']
-        delta_volume = 100 * 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
-
         predicted_data.append({
             'symbol' : current_stat['symbol'], 
-            'delta_price' : delta_price,
-            'delta_volume' : delta_volume,
-            'prediction' : predictions[i][0] if predictions.any() else 0,
+            'delta_price' : get_delta_value(previous_stat[0]['price'], current_stat['price']),
+            'delta_volume' : get_delta_value(previous_stat[0]['volume'], current_stat['volume']),
+            'confidence' : predictions[i][0] if predictions.any() else 0,
             'buy_price' : current_stat['price'],
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
 
-    sorted(predicted_data, key = itemgetter('prediction'), reverse = True)
+    sorted(predicted_data, key = itemgetter('confidence'), reverse = True)
 
     return {
         'all': predicted_data, 
@@ -91,7 +87,7 @@ def buy(predicted_data):
             if (coin['delta_price'] != 0 and coin['delta_volume'] != 0):
                 with open('trades_active_' + category + '.csv', mode='a', newline='') as csvfile:
                     writer = csv.writer(csvfile)
-                    writer.writerow([coin['symbol'], coin['delta_price'], coin['delta_volume'], coin['prediction'], coin['buy_price'], coin['buy_time']])
+                    writer.writerow([coin['symbol'], coin['delta_price'], coin['delta_volume'], coin['confidence'], coin['buy_price'], coin['buy_time']])
 
 def sell(current_stats):
     categories = ['all', 'predicted', 'random']
@@ -105,7 +101,9 @@ def sell(current_stats):
                     profit = 100 * 100 * (sell_price / float(row[4]) - 1)
                     writer.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
                 active.truncate(0)
-    
+
+def get_delta_value(previous_value, current_value):
+    return 100 * 100 * (current_value - previous_value) / previous_value
 
 def main():
     previous_stats = get_stats() if os.path.exists('stats.csv') else None
