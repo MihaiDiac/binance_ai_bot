@@ -8,7 +8,8 @@ import random
 from datetime import datetime
 import os
 
-tf.config.set_visible_devices([], 'GPU')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["CUDA_VISIBLE_DEVICES"] = ''
 
 def get_model():
     return tf.keras.models.load_model('model') if os.path.exists('model/saved_model.pb') else None

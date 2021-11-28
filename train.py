@@ -3,7 +3,8 @@ import numpy
 import csv
 import os
 
-tf.config.set_visible_devices([], 'GPU')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["CUDA_VISIBLE_DEVICES"] = ''
 
 def train():
     if (not os.path.exists('trades_finished_all.csv')):
