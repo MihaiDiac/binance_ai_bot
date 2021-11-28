@@ -45,5 +45,4 @@ if os.path.exists('trades_finished_all.csv'):
     summary = get_summary(summary, 'all', 'trades_finished_all.csv')
 
 pprint(summary)
-
 # print(tabulate([['2021-11-25', '0.5', '0.23']], headers = ['date', 'predicted', 'all']))
