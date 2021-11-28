@@ -10,6 +10,10 @@ This project does not automate transations (yet).
 
 ## Usage
 
+### Installing prerequisites
+
+This project requires python and the following modules: tensorflow, numpy, requests and tabulate. 
+
 ### Gathering data
 
 Running predict.py the first time will create the file stats.csv (which holds the symbol of the coin, current price and current volume). Additionally a message will be shown ("Info: no data for previous stats").
