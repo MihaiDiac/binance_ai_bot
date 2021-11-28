@@ -53,8 +53,8 @@ def predict(model, previous_stats, current_stats):
 
     return {
         'all': predicted_data, 
-        'predicted': predicted_data[:15] if predictions.all() else [random.choice(predicted_data) for i in range(15)],
-        'random': [random.choice(predicted_data) for i in range(15)]
+        'predicted': predicted_data[:10] if predictions.all() else [random.choice(predicted_data) for i in range(10)],
+        'random': [random.choice(predicted_data) for i in range(10)]
     }
 
 def get_stats():
