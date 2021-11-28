@@ -26,7 +26,7 @@ def train():
     return model
 
 def save(model):
-    model.save('crypto_model')
+    model.save('model')
 
 model = train()
 save(model)

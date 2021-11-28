@@ -11,7 +11,7 @@ import os
 tf.config.set_visible_devices([], 'GPU')
 
 def get_model():
-    return tf.keras.models.load_model('crypto_model')
+    return tf.keras.models.load_model('model')
 
 def predict(model, previous_stats, current_stats):
     if (not previous_stats):
