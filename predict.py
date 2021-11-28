@@ -29,7 +29,7 @@ def predict(model, previous_stats, current_stats):
         delta_volume = 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
         predict_data = numpy.append(predict_data, [[delta_price, delta_volume]], axis = 0)
 
-    predictions = model.predict(predict_data) if model else None
+    predictions = model.predict(predict_data) if model else []
 
     predicted_data = []
     for i, current_stat in enumerate(current_stats):
