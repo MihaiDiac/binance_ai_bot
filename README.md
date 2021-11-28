@@ -28,7 +28,7 @@ Running predict.py the fourth time and after will update all previously created 
 
 Running train.py will create the model. This requires the file trades_finished_all.csv. If the file is not present an error will be shown ("Error: no data for model training!").
 
-Running predict.py before a model is trained will cause the script random values instead of predicted values for trades_active_predicted.csv. Additionally a message will be shown ("Info: no model to load").
+Running predict.py before a model is trained will cause the script random values instead of predicted values for trades_active_predicted.csv. Additionally the confidence predicted will be 0 and a message will be shown ("Info: no model to load").
 
 ### Automating the bot
 
