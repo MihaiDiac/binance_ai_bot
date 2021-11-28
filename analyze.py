@@ -38,11 +38,20 @@ def get_summary(summary, branch, trades_file):
 
 summary = {}
 
-if os.path.exists('trades_finished.csv'):
-    summary = get_summary(summary, 'predicted', 'trades_finished.csv')
+if os.path.exists('trades_finished_predicted.csv'):
+    summary = get_summary(summary, 'predicted', 'trades_finished_predicted.csv')
+
+if os.path.exists('trades_finished_random.csv'):
+    summary = get_summary(summary, 'random', 'trades_finished_random.csv')
 
 if os.path.exists('trades_finished_all.csv'):
     summary = get_summary(summary, 'all', 'trades_finished_all.csv')
 
-pprint(summary)
-# print(tabulate([['2021-11-25', '0.5', '0.23']], headers = ['date', 'predicted', 'all']))
+analyzed_data = []
+for item in summary:
+    analyzed_data.append([item, summary[item]['predicted']['ratio'] / 100, summary[item]['random']['ratio'] / 100, summary[item]['all']['ratio'] / 100])
+
+if (analyzed_data):
+    print(tabulate(analyzed_data, headers = ['Date', 'Predicted', 'Random', 'All']))
+else:
+    print("Warning: no data to analyze")
