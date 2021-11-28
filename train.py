@@ -7,7 +7,7 @@ tf.config.set_visible_devices([], 'GPU')
 
 def train():
     if (not os.path.exists('trades_finished_all.csv')):
-        exit('No data for model training!')
+        exit('Error: no data for model training!')
 
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(input_shape = (2,), units = 20, activation = tf.nn.relu),

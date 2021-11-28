@@ -15,7 +15,7 @@ def get_model():
 
 def predict(model, previous_stats, current_stats):
     if (not previous_stats):
-        exit('No data for previous stats. This is normal on the first execution of the script.')
+        exit('Info: no data for previous stats')
     
     predict_data = numpy.empty(shape=[0, 2])
 
@@ -29,7 +29,11 @@ def predict(model, previous_stats, current_stats):
         delta_volume = 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
         predict_data = numpy.append(predict_data, [[delta_price, delta_volume]], axis = 0)
 
-    predictions = model.predict(predict_data) if model else []
+    if (model):
+        predictions = model.predict(predict_data)
+    else:
+        predictions = numpy.empty(shape=[0, 1])
+        print('Info: no model to load')
 
     predicted_data = []
     for i, current_stat in enumerate(current_stats):
@@ -37,14 +41,14 @@ def predict(model, previous_stats, current_stats):
         if not previous_stat:
             break
 
-        delta_price = 100 * (current_stat['price'] - previous_stat[0]['price']) / previous_stat[0]['price']
-        delta_volume = 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
+        delta_price = 100 * 100 * (current_stat['price'] - previous_stat[0]['price']) / previous_stat[0]['price']
+        delta_volume = 100 * 100 * (current_stat['volume'] - previous_stat[0]['volume']) / previous_stat[0]['volume']
 
         predicted_data.append({
             'symbol' : current_stat['symbol'], 
             'delta_price' : delta_price,
             'delta_volume' : delta_volume,
-            'prediction' : predictions[i][0] if predictions.all() else 0,
+            'prediction' : predictions[i][0] if predictions.any() else 0,
             'buy_price' : current_stat['price'],
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
@@ -53,7 +57,7 @@ def predict(model, previous_stats, current_stats):
 
     return {
         'all': predicted_data, 
-        'predicted': predicted_data[:10] if predictions.all() else [random.choice(predicted_data) for i in range(10)],
+        'predicted': predicted_data[:10] if predictions.any() else [random.choice(predicted_data) for i in range(10)],
         'random': [random.choice(predicted_data) for i in range(10)]
     }
 
