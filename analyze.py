@@ -47,11 +47,14 @@ if os.path.exists('trades_finished_random.csv'):
 if os.path.exists('trades_finished_all.csv'):
     summary = get_summary(summary, 'all', 'trades_finished_all.csv')
 
-analyzed_data = []
+average = []
+ratio = []
 for item in summary:
-    analyzed_data.append([item, summary[item]['predicted']['ratio'] / 100, summary[item]['random']['ratio'] / 100, summary[item]['all']['ratio'] / 100])
+    average.append([item, summary[item]['predicted']['avg'] / 100, summary[item]['random']['avg'] / 100, summary[item]['all']['avg'] / 100])
+    ratio.append([item, summary[item]['predicted']['ratio'] / 100, summary[item]['random']['ratio'] / 100, summary[item]['all']['ratio'] / 100])
 
-if (analyzed_data):
-    print(tabulate(analyzed_data, headers = ['Date', 'Predicted', 'Random', 'All']))
+if (average and ratio):
+    print(os.linesep + tabulate(average, headers = ['Average', 'Predicted', 'Random', 'All'], tablefmt="presto") + os.linesep)
+    print(os.linesep + tabulate(ratio, headers = ['Ratio', 'Predicted', 'Random', 'All'], tablefmt="presto") + os.linesep)
 else:
     print("Warning: no data to analyze")
