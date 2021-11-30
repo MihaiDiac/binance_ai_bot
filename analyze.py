@@ -33,7 +33,7 @@ def get_summary(summary, branch, trades_file):
     for item in summary:
         if branch in summary[item]:
             summary[item][branch]['avg'] = summary[item][branch]['sum'] / (summary[item][branch]['pos_count'] + summary[item][branch]['neg_count'])
-            summary[item][branch]['ratio'] = 100 * (summary[item][branch]['pos_count'] / summary[item][branch]['neg_count'] - 1)
+            summary[item][branch]['ratio'] = 100 * (summary[item][branch]['pos_count'] / summary[item][branch]['neg_count'] - 1) if summary[item][branch]['neg_count'] > 0 else 'max'
 
     return summary
 
