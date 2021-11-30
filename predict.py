@@ -85,10 +85,6 @@ def set_stats():
 
 def buy(predicted_data):
     for category in predicted_data:
-        if (category == 'predicted_1'):
-            pprint(predicted_data[category])
-        if (category == 'predicted_10'):
-            pprint(predicted_data[category])
         for coin in predicted_data[category]:
             if (coin['delta_price'] != 0 and coin['delta_volume'] != 0):
                 with open('trades_active_' + category + '.csv', mode='a', newline='') as csvfile:

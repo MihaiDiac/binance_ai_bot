@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 from pprint import pprint
 import os
+from operator import itemgetter
 from tabulate import tabulate
 
 def get_summary(summary, branch, trades_file):
@@ -75,7 +76,23 @@ for item in summary:
     ])
 
 if (average and ratio):
-    print(os.linesep + tabulate(average, headers = ['Average', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], tablefmt="presto") + os.linesep)
-    print(os.linesep + tabulate(ratio, headers = ['Ratio', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], tablefmt="presto") + os.linesep)
+    print(
+        os.linesep + 
+        tabulate(
+            sorted(average, key = itemgetter(0)), 
+            headers = ['Average', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], 
+            tablefmt="presto"
+        ) + 
+        os.linesep
+    )
+    print(
+        os.linesep + 
+        tabulate(
+            sorted(ratio, key = itemgetter(0)), 
+            headers = ['Ratio', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], 
+            tablefmt="presto"
+        ) + 
+        os.linesep
+    )
 else:
     print("Warning: no data to analyze")
