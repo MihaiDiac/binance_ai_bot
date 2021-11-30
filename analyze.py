@@ -35,11 +35,6 @@ def get_summary(summary, branch, trades_file):
             summary[item][branch]['avg'] = summary[item][branch]['sum'] / (summary[item][branch]['pos_count'] + summary[item][branch]['neg_count'])
             summary[item][branch]['ratio'] = 100 * summary[item][branch]['pos_count'] / (summary[item][branch]['pos_count'] + summary[item][branch]['neg_count'])
 
-            if (branch == 'predicted_1'):
-                print(summary[item][branch]['pos_count'])
-                print(summary[item][branch]['neg_count'])
-                print(summary[item][branch]['ratio'])
-
     return summary
 
 summary = {}
