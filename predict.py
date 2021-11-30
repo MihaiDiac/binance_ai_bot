@@ -100,12 +100,12 @@ def sell(current_stats):
                 writer = csv.writer(finished)
                 for row in csv.reader(active):
                     sell_price = [d for d in current_stats if d['symbol'] == row[0]][0]['price']
-                    profit = 100 * 100 * (sell_price / float(row[4]) - 1)
+                    profit = get_delta_value(float(4), sell_price)
                     writer.writerow([row[0], row[1], row[2], row[3], row[4], sell_price, profit, row[5], datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
                 active.truncate(0)
 
 def get_delta_value(previous_value, current_value):
-    return 100 * 100 * (current_value - previous_value) / previous_value
+    return 100 * (100 * current_value - 100 * previous_value) / previous_value
 
 def main():
     previous_stats = get_stats() if os.path.exists('stats.csv') else None
