@@ -38,23 +38,44 @@ def get_summary(summary, branch, trades_file):
 
 summary = {}
 
-if os.path.exists('trades_finished_predicted.csv'):
-    summary = get_summary(summary, 'predicted', 'trades_finished_predicted.csv')
+if os.path.exists('trades_finished_predicted_1.csv'):
+    summary = get_summary(summary, 'predicted_1', 'trades_finished_predicted_1.csv')
 
-if os.path.exists('trades_finished_random.csv'):
-    summary = get_summary(summary, 'random', 'trades_finished_random.csv')
+if os.path.exists('trades_finished_random_1.csv'):
+    summary = get_summary(summary, 'random_1', 'trades_finished_random_1.csv')
+
+if os.path.exists('trades_finished_predicted_10.csv'):
+    summary = get_summary(summary, 'predicted_10', 'trades_finished_predicted_10.csv')
+
+if os.path.exists('trades_finished_random_10.csv'):
+    summary = get_summary(summary, 'random_10', 'trades_finished_random_10.csv')
 
 if os.path.exists('trades_finished_all.csv'):
     summary = get_summary(summary, 'all', 'trades_finished_all.csv')
 
 average = []
 ratio = []
+
 for item in summary:
-    average.append([item, summary[item]['predicted']['avg'] / 100, summary[item]['random']['avg'] / 100, summary[item]['all']['avg'] / 100])
-    ratio.append([item, summary[item]['predicted']['ratio'] / 100, summary[item]['random']['ratio'] / 100, summary[item]['all']['ratio'] / 100])
+    average.append([
+        item, 
+        summary[item]['predicted_1']['avg'] / 100 if 'predicted_1' in summary[item] else '-',
+        summary[item]['random_1']['avg'] / 100 if 'random_1' in summary[item] else '-',
+        summary[item]['predicted_10']['avg'] / 100 if 'predicted_10' in summary[item] else '-',
+        summary[item]['random_10']['avg'] / 100 if 'random_10' in summary[item] else '-',
+        summary[item]['all']['avg'] / 100 if 'all' in summary[item] else '-'
+    ])
+    ratio.append([
+        item, 
+        summary[item]['predicted_1']['ratio'] / 100 if 'predicted_1' in summary[item] else '-',
+        summary[item]['random_1']['ratio'] / 100 if 'random_1' in summary[item] else '-',
+        summary[item]['predicted_10']['ratio'] / 100 if 'predicted_10' in summary[item] else '-',
+        summary[item]['random_10']['ratio'] / 100 if 'random_10' in summary[item] else '-',
+        summary[item]['all']['ratio'] / 100 if 'all' in summary[item] else '-'
+    ])
 
 if (average and ratio):
-    print(os.linesep + tabulate(average, headers = ['Average', 'Predicted', 'Random', 'All'], tablefmt="presto") + os.linesep)
-    print(os.linesep + tabulate(ratio, headers = ['Ratio', 'Predicted', 'Random', 'All'], tablefmt="presto") + os.linesep)
+    print(os.linesep + tabulate(average, headers = ['Average', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], tablefmt="presto") + os.linesep)
+    print(os.linesep + tabulate(ratio, headers = ['Ratio', 'Predicted-1', 'Random-1', 'Predicted-10', 'Random-10', 'All'], tablefmt="presto") + os.linesep)
 else:
     print("Warning: no data to analyze")

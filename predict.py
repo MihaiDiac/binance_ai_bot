@@ -54,8 +54,10 @@ def predict(model, previous_stats, current_stats):
 
     return {
         'all': predicted_data, 
-        'predicted': predicted_data[:10] if predictions.any() else [random.choice(predicted_data) for i in range(10)],
-        'random': [random.choice(predicted_data) for i in range(10)]
+        'predicted_10': predicted_data[:10] if predictions.any() else [random.choice(predicted_data) for i in range(10)],
+        'random_10': [random.choice(predicted_data) for i in range(10)],
+        'predicted_1': [predicted_data[0] if predictions.any() else random.choice(predicted_data)],
+        'random_1': [random.choice(predicted_data)]
     }
 
 def get_stats():
@@ -82,7 +84,9 @@ def set_stats():
 
 
 def buy(predicted_data):
+    print(predicted_data)
     for category in predicted_data:
+        print(category)
         for coin in predicted_data[category]:
             if (coin['delta_price'] != 0 and coin['delta_volume'] != 0):
                 with open('trades_active_' + category + '.csv', mode='a', newline='') as csvfile:
@@ -90,7 +94,7 @@ def buy(predicted_data):
                     writer.writerow([coin['symbol'], coin['delta_price'], coin['delta_volume'], coin['confidence'], coin['buy_price'], coin['buy_time']])
 
 def sell(current_stats):
-    categories = ['all', 'predicted', 'random']
+    categories = ['all', 'predicted_10', 'random_10', 'predicted_1', 'random_1']
 
     for category in categories:
         if os.path.exists('trades_active_' + category + '.csv'):
