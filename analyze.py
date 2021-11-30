@@ -33,7 +33,7 @@ def get_summary(summary, branch, trades_file):
     for item in summary:
         if branch in summary[item]:
             summary[item][branch]['avg'] = summary[item][branch]['sum'] / (summary[item][branch]['pos_count'] + summary[item][branch]['neg_count'])
-            summary[item][branch]['ratio'] = 100 * (summary[item][branch]['pos_count'] / summary[item][branch]['neg_count'] - 1) if summary[item][branch]['neg_count'] > 0 else 'max'
+            summary[item][branch]['ratio'] = 100 * (summary[item][branch]['pos_count'] / summary[item][branch]['neg_count'] - 1) if summary[item][branch]['neg_count'] > 0 else 100
 
     return summary
 
@@ -68,11 +68,11 @@ for item in summary:
     ])
     ratio.append([
         item, 
-        summary[item]['predicted_1']['ratio'] / 100 if 'predicted_1' in summary[item] else '-',
-        summary[item]['random_1']['ratio'] / 100 if 'random_1' in summary[item] else '-',
-        summary[item]['predicted_10']['ratio'] / 100 if 'predicted_10' in summary[item] else '-',
-        summary[item]['random_10']['ratio'] / 100 if 'random_10' in summary[item] else '-',
-        summary[item]['all']['ratio'] / 100 if 'all' in summary[item] else '-'
+        summary[item]['predicted_1']['ratio'] if 'predicted_1' in summary[item] else '-',
+        summary[item]['random_1']['ratio'] if 'random_1' in summary[item] else '-',
+        summary[item]['predicted_10']['ratio'] if 'predicted_10' in summary[item] else '-',
+        summary[item]['random_10']['ratio'] if 'random_10' in summary[item] else '-',
+        summary[item]['all']['ratio'] if 'all' in summary[item] else '-'
     ])
 
 if (average and ratio):
