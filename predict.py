@@ -43,8 +43,8 @@ def predict(model, previous_stats, current_stats):
 
         predicted_data.append({
             'symbol' : current_stat['symbol'], 
-            'delta_price' : get_delta_value(previous_stat[0]['price'], current_stat['price']),
-            'delta_volume' : get_delta_value(previous_stat[0]['volume'], current_stat['volume']),
+            'delta_price' : 100 * get_delta_value(previous_stat[0]['price'], current_stat['price']),
+            'delta_volume' : 100 * get_delta_value(previous_stat[0]['volume'], current_stat['volume']),
             'confidence' : predictions[i][0] if predictions.any() else 0,
             'buy_price' : current_stat['price'],
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -105,7 +105,7 @@ def sell(current_stats):
                 active.truncate(0)
 
 def get_delta_value(previous_value, current_value):
-    return 100 * (100 * current_value - 100 * previous_value) / previous_value
+    return 100 * (current_value - previous_value) / previous_value
 
 def main():
     previous_stats = get_stats() if os.path.exists('stats.csv') else None
