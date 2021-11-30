@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy
 import csv
 from operator import itemgetter
@@ -8,8 +7,9 @@ import random
 from datetime import datetime
 import os
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["CUDA_VISIBLE_DEVICES"] = ''
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
 
 def get_model():
     return tf.keras.models.load_model('model') if os.path.exists('model/saved_model.pb') else None
@@ -50,14 +50,14 @@ def predict(model, previous_stats, current_stats):
             'buy_time' : datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
 
-    sorted(predicted_data, key = itemgetter('confidence'), reverse = True)
+    predicted_data = sorted(predicted_data, key = itemgetter('confidence'), reverse = True)
 
     return {
         'all': predicted_data, 
-        'predicted_10': predicted_data[:10] if predictions.any() else [random.choice(predicted_data) for i in range(10)],
-        'random_10': [random.choice(predicted_data) for i in range(10)],
         'predicted_1': [predicted_data[0] if predictions.any() else random.choice(predicted_data)],
-        'random_1': [random.choice(predicted_data)]
+        'predicted_10': predicted_data[:10] if predictions.any() else [random.choice(predicted_data) for i in range(10)],
+        'random_1': [random.choice(predicted_data)],
+        'random_10': [random.choice(predicted_data) for i in range(10)]
     }
 
 def get_stats():
@@ -84,9 +84,11 @@ def set_stats():
 
 
 def buy(predicted_data):
-    print(predicted_data)
     for category in predicted_data:
-        print(category)
+        if (category == 'predicted_1'):
+            pprint(predicted_data[category])
+        if (category == 'predicted_10'):
+            pprint(predicted_data[category])
         for coin in predicted_data[category]:
             if (coin['delta_price'] != 0 and coin['delta_volume'] != 0):
                 with open('trades_active_' + category + '.csv', mode='a', newline='') as csvfile:
