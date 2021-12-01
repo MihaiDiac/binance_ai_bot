@@ -40,6 +40,10 @@ To train the model continuously it is recommended to set up a daily scheduled ta
 
 Running analyse.py will show agredated results from the simulated trades. This requires the files trades_finished_*.csv. If the files are not present a warning will be shown ("Warning: no data to analyze"). If some of the files are missing, data will be partially displayed.
 
+## Support
+
+If you like this project and want to support it or you just want to buy me a beer, you can send BTC, ETH, BNB etc. at this address: 0x20c1dd66380529c3ee232e2cc82f0ca0ddf5f7ce
+
 ## Disclaimer
 
 This project is provided "as is" without any warranty of any kind.
