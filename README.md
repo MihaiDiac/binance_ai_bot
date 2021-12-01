@@ -40,28 +40,6 @@ To train the model continuously it is recommended to set up a daily scheduled ta
 
 Running analyse.py will show agredated results from the simulated trades. This requires the files trades_finished_*.csv. If the files are not present a warning will be shown ("Warning: no data to analyze"). If some of the files are missing, data will be partially displayed.
 
-The data is separated in two tables: 
-1) Average 
-- shows profit in percenteges for each category
-- positive value = profit; negative value = loss
-- the bot does not take into account transaction fees (yet), so the overall profit value will be slightly smaller than the shown value
-2) Ratio
-- shows the percentage of positive over negative trades
-- over 50 = more trades with profit outcome; under 50 = more trades with loss outcome
-
-Each table has 5 columns:
-1) Predicted-1: trades the coin with the highest confidence
-- desired outcome is to have the highest value on this column
-2) Random-1: trades a random coin
-- used to compare the outcome with predicted-1
-3) Predicted-10: trades the first 10 coins with the highest confidence
-- desired outcome is to have the highest value on this column (except when compared with predicted-1)
-4) Random-10: trades 10 random coins
-- used to compare the outcome with predicted-10
-5) All: trades all coins
-- used to detect market trend
-- very low / high numbers mean bear / bull market and should be removed before training the model
-
 ## Disclaimer
 
 This project is provided "as is" without any warranty of any kind.
