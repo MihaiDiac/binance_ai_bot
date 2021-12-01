@@ -6,7 +6,7 @@ This project is intended to gather data and train a tensorflow model able to pre
 
 This is done by calculating the diference of price and volume in a defined interval for all coins and comparing with the profit obtained by purchasing each coin.
 
-This project does not automate transations (yet).
+The bot does not automate transations (yet).
 
 ## Usage
 
@@ -35,6 +35,14 @@ Running predict.py before a model is trained will cause the script random values
 To get the most consitent data, it is recommended to set up a scheduled task for running predict.py every defined interval (e.g. 15 minutes, 1 hour, 4 hours etc.).
 
 To train the model continuously it is recommended to set up a daily scheduled task for running train.py
+
+### Analysing data
+
+Running analyse.py will show agredated results from the simulated trades. This requires the files trades_finished_*.csv. If the files are not present a warning will be shown ("Warning: no data to analyze"). If some of the files are missing, data will be partially displayed.
+
+## Support
+
+If you like this project and want to support it or you just want to buy me a beer, you can send BTC, ETH, BNB etc. at this address: 0x20c1dd66380529c3ee232e2cc82f0ca0ddf5f7ce
 
 ## Disclaimer
 
