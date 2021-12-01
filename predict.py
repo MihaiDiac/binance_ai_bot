@@ -6,8 +6,12 @@ import requests
 import random
 from datetime import datetime
 import os
+from configparser import ConfigParser
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+config = ConfigParser()
+config.read('config.ini')
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = config['tensorflow']['log_level']
 
 import tensorflow as tf
 
