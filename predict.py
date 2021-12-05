@@ -24,7 +24,13 @@ def predict(model, klines):
     athConfig = ConfigParser()
     athConfig.read('ath.ini')
 
-    x_test = numpy.array([[float(klines[0][1]), float(klines[0][2]), float(klines[0][3]), float(klines[0][4])]])
+    x_test = numpy.array([[
+        float(klines[0][1]), # open price
+        float(klines[0][2]), # high price
+        float(klines[0][3]), # low price
+        float(klines[0][4]), # close price
+    ]])
+    
     return [
         float(klines[0][4]), # buy price
         model.predict(x_test / float(athConfig['symbols']['BTCUSDT'])) * float(athConfig['symbols']['BTCUSDT']) # precited price
@@ -37,7 +43,7 @@ def buy(predicted):
             'BTCUSDT', # symbol
             predicted[0], # buy price
             predicted[1][0][0], # predicted price
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S') # buy time
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # buy time
         ])
 
 def sell(klines):
@@ -53,7 +59,7 @@ def sell(klines):
                     get_delta_value(row[2], klines[0][4]), # predicted profit
                     get_delta_value(row[1], klines[0][4]), # real profit
                     row[3], # buy time
-                    datetime.now().strftime('%Y-%m-%d %H:%M:%S') # sell time
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # sell time
                 ])
             active.truncate(0)
 
