@@ -43,7 +43,7 @@ def buy(predicted):
             'BTCUSDT', # symbol
             predicted[0], # buy price
             predicted[1][0][0], # predicted price
-            get_delta_value(row[1], row[2]), # predicted profit
+            get_delta_value(predicted[0], predicted[1][0][0]), # predicted profit
             datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # buy time
         ])
 
