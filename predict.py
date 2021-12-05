@@ -43,6 +43,7 @@ def buy(predicted):
             'BTCUSDT', # symbol
             predicted[0], # buy price
             predicted[1][0][0], # predicted price
+            get_delta_value(row[1], row[2]), # predicted profit
             datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # buy time
         ])
 
@@ -56,9 +57,9 @@ def sell(klines):
                     row[1], # buy price
                     row[2], # predicted price
                     klines[0][4], # sell price
-                    get_delta_value(row[2], klines[0][4]), # predicted profit
+                    row[3], # predicted profit
                     get_delta_value(row[1], klines[0][4]), # real profit
-                    row[3], # buy time
+                    row[4], # buy time
                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # sell time
                 ])
             active.truncate(0)
