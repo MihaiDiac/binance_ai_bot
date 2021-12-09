@@ -14,33 +14,36 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig['tensorflow']['log_level']
 
 import tensorflow as tf
 
-def get_model():
-    if not os.path.exists('model/saved_model.pb'):
-        error('Error: no model to load')
+symbolConfig = ConfigParser()
+symbolConfig.read('symbols.ini')
+
+def get_model(symbol):
+    if not os.path.exists('model-' + symbol + '/saved_model.pb'):
+        print('No model for ' + symbol)
+        return None
     
-    return tf.keras.models.load_model('model')
+    return tf.keras.models.load_model('model-' + symbol)
 
-def predict(model, klines):
-    athConfig = ConfigParser()
-    athConfig.read('ath.ini')
-
+def predict(symbol, model, klines):
     x_test = numpy.array([[
         float(klines[0][1]), # open price
         float(klines[0][2]), # high price
         float(klines[0][3]), # low price
         float(klines[0][4]), # close price
     ]])
-    
+
+    ath = float(symbolConfig[symbol]['ath'])
+
     return [
         float(klines[0][4]), # buy price
-        model.predict(x_test / float(athConfig['symbols']['BTCUSDT'])) * float(athConfig['symbols']['BTCUSDT']) # precited price
+        model.predict(100 * x_test / ath) * ath / 100, # precited price
     ]
 
-def buy(predicted):
+def buy(symbol, predicted):
     with open('trades_active.csv', mode='a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow([
-            'BTCUSDT', # symbol
+            symbol, # symbol
             predicted[0], # buy price
             predicted[1][0][0], # predicted price
             get_delta_value(predicted[0], predicted[1][0][0]), # predicted profit
@@ -64,14 +67,15 @@ def sell(klines):
                 ])
             active.truncate(0)
 
-def get_klines():
-    return Client().get_historical_klines('BTCUSDT', Client.KLINE_INTERVAL_1HOUR, '1 hour ago UTC')
+def get_klines(symbol):
+    return Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '1 hour ago UTC')
 
 def get_delta_value(previous_value, current_value):
     return 100 * (float(current_value) - float(previous_value)) / float(previous_value)
 
 def main():
-    sell(get_klines())
-    buy(predict(get_model(), get_klines()))
+    for symbol in symbolConfig.sections():
+        sell(get_klines(symbol))
+        buy(symbol, predict(symbol, get_model(symbol), get_klines(symbol)))
 
 main()
