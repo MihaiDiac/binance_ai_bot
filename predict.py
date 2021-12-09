@@ -10,7 +10,7 @@ from configparser import ConfigParser
 botConfig = ConfigParser()
 botConfig.read('bot.ini')
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig['tensorflow']['log_level']
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig.get('tensorflow', 'log_level')
 
 import tensorflow as tf
 
@@ -32,7 +32,7 @@ def predict(symbol, model, klines):
         float(klines[0][4]), # close price
     ]])
 
-    ath = float(symbolConfig[symbol]['ath'])
+    ath = float(symbolConfig.get(symbol, 'ath'))
 
     return [
         float(klines[0][4]), # buy price
@@ -50,22 +50,22 @@ def buy(symbol, predicted):
             datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # buy time
         ])
 
-def sell(klines):
+def sell(symbol, klines):
     if os.path.exists('trades_active.csv'):
         with open('trades_active.csv', 'r+') as active, open('trades_finished.csv', 'a', newline='') as finished:
             writer = csv.writer(finished)
             for row in csv.reader(active):
-                writer.writerow([
-                    row[0], # symbol
-                    row[1], # buy price
-                    row[2], # predicted price
-                    klines[0][4], # sell price
-                    row[3], # predicted profit
-                    get_delta_value(row[1], klines[0][4]), # real profit
-                    row[4], # buy time
-                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # sell time
-                ])
-            active.truncate(0)
+                if (row[0] == symbol):
+                    writer.writerow([
+                        row[0], # symbol
+                        row[1], # buy price
+                        row[2], # predicted price
+                        klines[0][4], # sell price
+                        row[3], # predicted profit
+                        get_delta_value(row[1], klines[0][4]), # real profit
+                        row[4], # buy time
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'), # sell time
+                    ])
 
 def get_klines(symbol):
     return Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '1 hour ago UTC')
@@ -75,7 +75,13 @@ def get_delta_value(previous_value, current_value):
 
 def main():
     for symbol in symbolConfig.sections():
-        sell(get_klines(symbol))
+        sell(symbol, get_klines(symbol))
+
+    if os.path.exists('trades_active.csv'):
+        with open('trades_active.csv', 'r+') as active:
+            active.truncate(0)
+
+    for symbol in symbolConfig.sections():
         buy(symbol, predict(symbol, get_model(symbol), get_klines(symbol)))
 
 main()

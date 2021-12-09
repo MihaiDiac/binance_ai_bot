@@ -8,7 +8,7 @@ from configparser import ConfigParser
 botConfig = ConfigParser()
 botConfig.read('bot.ini')
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig['tensorflow']['log_level']
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig.get('tensorflow', 'log_level')
 
 import tensorflow as tf
 
@@ -22,14 +22,14 @@ def train(symbol):
         tf.keras.layers.Dense(units = 1)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate = 0.01), loss='mse', metrics=['mae'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate = float(botConfig.get('train', 'learning_rate'))), loss='mse', metrics=['mae'])
 
     klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '1 year ago UTC')
 
     x_train = numpy.empty(shape=[0, 4])
     y_train = numpy.empty(shape=[0, 1])
 
-    ath = float(symbolConfig[symbol]['ath'])
+    ath = float(symbolConfig.get(symbol, 'ath'))
     
     for i, kline in enumerate(klines):
         if (i == 0):
@@ -41,12 +41,10 @@ def train(symbol):
             y_train = numpy.append(y_train, [[float(klines[i][4])]], axis = 0)
         ath = float(klines[i][2]) if float(klines[i][2]) > ath else ath
 
-    print(ath)
-
-    if (ath > float(symbolConfig[symbol]['ath'])):
+    if (ath > float(symbolConfig.get(symbol, 'ath'))):
         symbolConfig.set(symbol, 'ath', str(ath))
 
-    model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = int(botConfig['train']['epochs']), batch_size = int(botConfig['train']['batch_size']))
+    model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = int(botConfig.get('train', 'epochs')), batch_size = int(botConfig.get('train', 'batch_size')))
 
     return model
 
