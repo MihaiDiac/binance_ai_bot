@@ -28,6 +28,8 @@ def train(symbol):
 
     x_train = numpy.empty(shape=[0, 4])
     y_train = numpy.empty(shape=[0, 1])
+
+    ath = float(symbolConfig[symbol]['ath'])
     
     for i, kline in enumerate(klines):
         if (i == 0):
@@ -37,9 +39,14 @@ def train(symbol):
         else:
             x_train = numpy.append(x_train, [[float(kline[1]), float(kline[2]), float(kline[3]), float(kline[4])]], axis = 0)
             y_train = numpy.append(y_train, [[float(klines[i][4])]], axis = 0)
-        ath = float(klines[i][2]) if float(klines[i][2]) > float(symbolConfig[symbol]['ath']) else float(symbolConfig[symbol]['ath'])
+        ath = float(klines[i][2]) if float(klines[i][2]) > ath else ath
 
-    model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = 50, batch_size = 8)
+    print(ath)
+
+    if (ath > float(symbolConfig[symbol]['ath'])):
+        symbolConfig.set(symbol, 'ath', str(ath))
+
+    model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = int(botConfig['train']['epochs']), batch_size = int(botConfig['train']['batch_size']))
 
     return model
 
