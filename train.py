@@ -17,14 +17,14 @@ symbolConfig.read('symbols.ini')
 
 def train(symbol):
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(input_shape = (4,), units = 32, activation = tf.nn.relu),
-    	tf.keras.layers.Dense(units = 32, activation = tf.nn.relu),
+        tf.keras.layers.Dense(input_shape = (4,), units = 64, activation = tf.nn.relu),
+    	tf.keras.layers.Dense(units = 64, activation = tf.nn.relu),
         tf.keras.layers.Dense(units = 1)
     ])
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate = float(botConfig.get('train', 'learning_rate'))), loss='mse', metrics=['mae'])
 
-    klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '1 year ago UTC')
+    klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '3 year ago UTC')
 
     x_train = numpy.empty(shape=[0, 4])
     y_train = numpy.empty(shape=[0, 1])
@@ -43,6 +43,8 @@ def train(symbol):
 
     if (ath > float(symbolConfig.get(symbol, 'ath'))):
         symbolConfig.set(symbol, 'ath', str(ath))
+        with open('symbols.ini', 'w') as configFile:
+            symbolConfig.write(configFile)
 
     model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = int(botConfig.get('train', 'epochs')), batch_size = int(botConfig.get('train', 'batch_size')))
 
