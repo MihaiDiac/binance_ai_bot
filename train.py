@@ -18,13 +18,13 @@ symbolConfig.read('symbols.ini')
 def train(symbol):
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(input_shape = (4,), units = 64, activation = tf.nn.relu),
-    	tf.keras.layers.Dense(units = 64, activation = tf.nn.relu),
-        tf.keras.layers.Dense(units = 1)
+        tf.keras.layers.Dense(units = 32, activation = tf.nn.relu),
+        tf.keras.layers.Dense(units = 1, activation='linear')
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate = float(botConfig.get('train', 'learning_rate'))), loss='mse', metrics=['mae'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate = float(botConfig.get('train', 'learning_rate'))), loss='mse')
 
-    klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '3 year ago UTC')
+    klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '3 year ago UTC', '24 hours ago UTC')
 
     x_train = numpy.empty(shape=[0, 4])
     y_train = numpy.empty(shape=[0, 1])
@@ -46,12 +46,40 @@ def train(symbol):
         with open('symbols.ini', 'w') as configFile:
             symbolConfig.write(configFile)
 
-    model.fit(100 * x_train / ath, 100 * y_train / ath, epochs = int(botConfig.get('train', 'epochs')), batch_size = int(botConfig.get('train', 'batch_size')))
+    model.fit(
+        100 * x_train / ath, 
+        100 * y_train / ath, 
+        epochs = int(botConfig.get('train', 'epochs')), 
+        batch_size = int(botConfig.get('train', 'batch_size')),
+        validation_data=(get_validation_data(symbol)),
+    )
 
     return model
 
 def save(symbol, model):
     model.save('model-' + symbol)
+
+def load(symbol):
+    return tf.keras.models.load_model('model-' + symbol)
+
+def get_validation_data(symbol):
+    klines = Client().get_historical_klines(symbol.upper(), Client.KLINE_INTERVAL_1HOUR, '24 hours ago UTC')
+
+    x_test = numpy.empty(shape=[0, 4])
+    y_test = numpy.empty(shape=[0, 1])
+
+    ath = float(symbolConfig.get(symbol, 'ath'))
+
+    for i, kline in enumerate(klines):
+        if (i == 0):
+            x_test = numpy.append(x_test, [[float(kline[1]), float(kline[2]), float(kline[3]), float(kline[4])]], axis = 0)
+        elif (i == len(klines) - 1):
+            y_test = numpy.append(y_test, [[float(klines[i][4])]], axis = 0)
+        else:
+            x_test = numpy.append(x_test, [[float(kline[1]), float(kline[2]), float(kline[3]), float(kline[4])]], axis = 0)
+            y_test = numpy.append(y_test, [[float(klines[i][4])]], axis = 0)
+
+    return 100 * x_test / ath, 100 * y_test / ath
 
 def main():
     for symbol in symbolConfig.sections():
