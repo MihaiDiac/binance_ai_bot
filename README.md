@@ -10,7 +10,7 @@ The bot does not automate transations (yet).
 
 ### Installing prerequisites
 
-This project requires python and the following modules: tensorflow, numpy and python-binance. 
+This project requires python and the following modules: tensorflow, numpy, matplotlib and python-binance. 
 
 ### Training the model
 
