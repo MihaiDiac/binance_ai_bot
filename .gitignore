@@ -1,4 +1,3 @@
 *.csv
 /model-*
-clean.py
 analyse.py
