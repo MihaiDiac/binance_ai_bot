@@ -1,18 +1,15 @@
+from configparser import ConfigParser
+from binance.client import Client
+import matplotlib.pyplot as plt
+import tensorflow as tf
+import functions as f
+from datetime import datetime
 import numpy
 import csv
-from operator import itemgetter
-from pprint import pprint
-from datetime import datetime
 import os
-from binance.client import Client
-from configparser import ConfigParser
 
 botConfig = ConfigParser()
 botConfig.read('bot.ini')
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = botConfig.get('tensorflow', 'log_level')
-
-import tensorflow as tf
 
 symbolConfig = ConfigParser()
 symbolConfig.read('symbols.ini')
@@ -30,13 +27,15 @@ def predict(symbol, model, klines):
         float(klines[0][2]), # high price
         float(klines[0][3]), # low price
         float(klines[0][4]), # close price
+        float(klines[0][5]), # volume
     ]])
 
-    ath = float(symbolConfig.get(symbol, 'ath'))
+    max_price = float(symbolConfig.get(symbol, 'max_price'))
+    max_volume = float(symbolConfig.get(symbol, 'max_volume'))
 
     return [
         float(klines[0][4]), # buy price
-        model.predict(100 * x_test / ath) * ath / 100, # precited price
+        model.predict(f.normalize_x(x_test, max_price, max_volume)) * max_price, # precited price
     ]
 
 def buy(symbol, predicted):
